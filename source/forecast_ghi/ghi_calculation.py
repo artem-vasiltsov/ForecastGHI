@@ -16,8 +16,8 @@ class ForecastGHI:
     def forecast_y_value_ghi(self):
 
         x_value = {}
-        # current_time = START_TIME
-        current_time = datetime.datetime(2019, 9, 1, 11, 50, 0)
+        current_time = START_TIME
+        # current_time = datetime.datetime(2019, 9, 1, 11, 50, 0)
         x_value[current_time] = self.db_manage.read_ghi_value(current_time)
         next_time = current_time + datetime.timedelta(hours=0, minutes=TIME_INTERVAL, seconds=0)
 
@@ -66,14 +66,13 @@ class ForecastGHI:
 
             y_value = {}
             end_t_stamp = list(avg_x_value.keys())[-1]
-            st_t_stamp = end_t_stamp - datetime.timedelta(hours=0, minutes=(COUNTER * AVG_COUNT - 1), seconds=0)
             for i in range(1, 13):
 
                 y_value[i] = self.constants[0][i]
 
-                for j, avg_x_key in enumerate(list(avg_x_value)[-20:]):
+                for j, avg_x_key in enumerate(list(avg_x_value)[-COUNTER:]):
 
-                    y_value[i] += self.constants[j + 1][i] * float(avg_x_value[avg_x_key])
+                    y_value[i] += self.constants[COUNTER - j][i] * float(avg_x_value[avg_x_key])
 
             print(y_value)
 

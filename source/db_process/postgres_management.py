@@ -7,8 +7,8 @@ class PostgresManage:
 
     def __init__(self):
 
-        conn = self.__connect_db()
-        self.cur = conn.cursor()
+        self.conn = self.__connect_db()
+        self.cur = self.conn.cursor()
         self.__create_table()
 
     @staticmethod
@@ -51,6 +51,8 @@ class PostgresManage:
             """
         )
 
+        self.conn.commit()
+
     def read_ghi_value(self, date_time):
 
         select_query = "select ghi_solar_irradiance_avg from {} where tstamp = %s".format(MEASUREMENT_TABLE_NAME)
@@ -84,6 +86,8 @@ class PostgresManage:
         record_insert = (t_stamp, x_val)
         self.cur.execute(insert_query, record_insert)
 
+        self.conn.commit()
+
     def insert_y_value(self, y_dict, t_stamp):
 
         insert_query = "insert into y_value (TSTAMP, y1, y2, y3, y4, y5, y6, y7, y8, y9, y10, y11, y12) " \
@@ -92,3 +96,5 @@ class PostgresManage:
                          y_dict[8], y_dict[9], y_dict[10], y_dict[11], y_dict[12])
 
         self.cur.execute(insert_query, record_insert)
+
+        self.conn.commit()
