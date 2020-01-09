@@ -15,8 +15,6 @@ def load_constants_y():
 
             constants[i][j] = constants_df["a" + str(i)][j - 1]
 
-    print(constants)
-
     return constants
 
 
