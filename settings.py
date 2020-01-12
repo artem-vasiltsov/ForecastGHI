@@ -13,6 +13,7 @@ START_TIME = now
 
 DB_HOST = "localhost"
 DB_NAME = "postgres"
+DB_PORT = "5432"
 DB_USER = "postgres"
 DB_PASSWORD = "123"
 MEASUREMENT_TABLE_NAME = "measurements_v1"

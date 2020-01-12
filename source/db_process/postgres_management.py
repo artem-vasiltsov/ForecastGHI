@@ -1,6 +1,6 @@
 import psycopg2
 
-from settings import DB_HOST, DB_NAME, DB_PASSWORD, DB_USER, MEASUREMENT_TABLE_NAME
+from settings import DB_HOST, DB_NAME, DB_PASSWORD, DB_USER, MEASUREMENT_TABLE_NAME, DB_PORT
 
 
 class PostgresManage:
@@ -14,7 +14,7 @@ class PostgresManage:
     @staticmethod
     def __connect_db():
 
-        conn = psycopg2.connect(host=DB_HOST, user=DB_USER, database=DB_NAME, password=DB_PASSWORD)
+        conn = psycopg2.connect(host=DB_HOST, port=DB_PORT, user=DB_USER, database=DB_NAME, password=DB_PASSWORD)
 
         return conn
 

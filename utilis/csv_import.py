@@ -1,11 +1,11 @@
 import psycopg2
 import os
 
-from settings import DB_HOST, DB_NAME, DB_PASSWORD, DB_USER, ROOT_DIR
+from settings import DB_HOST, DB_NAME, DB_PASSWORD, DB_USER, ROOT_DIR, DB_PORT
 
 
 test_csv_file = os.path.join(ROOT_DIR, 'test_data', 'measurements_v1(2).csv')
-conn = psycopg2.connect(host=DB_HOST, user=DB_USER, database=DB_NAME, password=DB_PASSWORD)
+conn = psycopg2.connect(host=DB_HOST, port=DB_PORT, user=DB_USER, database=DB_NAME, password=DB_PASSWORD)
 cur = conn.cursor()
 
 cur.execute(
