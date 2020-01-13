@@ -1,7 +1,7 @@
 import os
-from datetime import datetime
+import datetime
 
-now = datetime.now()
+now = datetime.datetime.now()
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONSTANTS_FILE = os.path.join(ROOT_DIR, 'constants', 'GHI forecastng coefficients.xlsx')
@@ -9,7 +9,7 @@ CONSTANTS_FILE = os.path.join(ROOT_DIR, 'constants', 'GHI forecastng coefficient
 TIME_INTERVAL = 1
 AVG_COUNT = 10
 COUNTER = 75
-START_TIME = now
+START_TIME = datetime.datetime(2019, 9, 1, 11, 50, 0)
 
 DB_HOST = "localhost"
 DB_NAME = "postgres"

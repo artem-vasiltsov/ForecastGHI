@@ -24,6 +24,7 @@ class PostgresManage:
             """
             CREATE TABLE IF NOT EXISTS public.average_x_value(
                 ID SERIAL PRIMARY KEY,
+                STATION text NOT NULL, 
                 TSTAMP timestamp NOT NULL,
                 GHI_10_AVERAGE text NOT NULL
             )
@@ -34,6 +35,7 @@ class PostgresManage:
             """
             CREATE TABLE IF NOT EXISTS public.y_value(
                 ID SERIAL PRIMARY KEY,
+                STATION text NOT NULL,
                 TSTAMP timestamp NOT NULL,
                 y1 text NOT NULL,
                 y2 text NOT NULL,
@@ -55,16 +57,19 @@ class PostgresManage:
 
     def read_ghi_value(self, date_time):
 
-        select_query = "select ghi_solar_irradiance_avg from {} where tstamp = %s".format(MEASUREMENT_TABLE_NAME)
+        select_query = "select station_name, ghi_solar_irradiance_avg from {} " \
+                       "where tstamp = %s".format(MEASUREMENT_TABLE_NAME)
+
         self.cur.execute(select_query, (date_time,))
-        ghi_value = self.cur.fetchall()
+        tbl_value = self.cur.fetchone()
 
-        if not ghi_value:
-            ret_val = ""
+        if tbl_value is None:
+
+            ghi_value = []
         else:
-            ret_val = ghi_value[0][0]
+            ghi_value = [tbl_value[0], tbl_value[1]]
 
-        return ret_val
+        return ghi_value
 
     def read_average_x_value(self):
 
@@ -76,23 +81,23 @@ class PostgresManage:
 
         for row in avg_x_records:
 
-            avg_x_dict[row[1]] = row[2]
+            avg_x_dict[row[2]] = [row[1], row[3]]
 
         return avg_x_dict
 
-    def insert_average_x_value(self, x_val, t_stamp):
+    def insert_average_x_value(self, x_val, t_stamp, station):
 
-        insert_query = """insert into average_x_value (TSTAMP, GHI_10_AVERAGE) values (%s, %s)"""
-        record_insert = (t_stamp, x_val)
+        insert_query = """insert into average_x_value (STATION, TSTAMP, GHI_10_AVERAGE) values (%s, %s, %s)"""
+        record_insert = (station, t_stamp, x_val)
         self.cur.execute(insert_query, record_insert)
 
         self.conn.commit()
 
-    def insert_y_value(self, y_dict, t_stamp):
+    def insert_y_value(self, y_dict, t_stamp, station):
 
-        insert_query = "insert into y_value (TSTAMP, y1, y2, y3, y4, y5, y6, y7, y8, y9, y10, y11, y12) " \
-                       "values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        record_insert = (t_stamp, y_dict[1], y_dict[2], y_dict[3], y_dict[4], y_dict[5], y_dict[6], y_dict[7],
+        insert_query = "insert into y_value (STATION, TSTAMP, y1, y2, y3, y4, y5, y6, y7, y8, y9, y10, y11, y12) " \
+                       "values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        record_insert = (station, t_stamp, y_dict[1], y_dict[2], y_dict[3], y_dict[4], y_dict[5], y_dict[6], y_dict[7],
                          y_dict[8], y_dict[9], y_dict[10], y_dict[11], y_dict[12])
 
         self.cur.execute(insert_query, record_insert)
