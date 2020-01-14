@@ -1,6 +1,7 @@
 import psycopg2
 
 from settings import DB_HOST, DB_NAME, DB_PASSWORD, DB_USER, MEASUREMENT_TABLE_NAME, DB_PORT
+from _collections import defaultdict
 
 
 class PostgresManage:
@@ -55,25 +56,25 @@ class PostgresManage:
 
         self.conn.commit()
 
-    def read_ghi_value(self, date_time):
+    def read_ghi_value(self, date_time, station_name):
 
-        select_query = "select station_name, ghi_solar_irradiance_avg from {} " \
-                       "where tstamp = %s".format(MEASUREMENT_TABLE_NAME)
+        select_query = "select ghi_solar_irradiance_avg from {} " \
+                       "where tstamp = %s and station_name = %s".format(MEASUREMENT_TABLE_NAME)
 
-        self.cur.execute(select_query, (date_time,))
+        self.cur.execute(select_query, (date_time, station_name,))
         tbl_value = self.cur.fetchone()
 
         if tbl_value is None:
 
-            ghi_value = []
+            ghi_value = 0
         else:
-            ghi_value = [tbl_value[0], tbl_value[1]]
+            ghi_value = tbl_value[0]
 
         return ghi_value
 
     def read_average_x_value(self):
 
-        avg_x_dict = {}
+        avg_x_dict = defaultdict(dict)
 
         select_query = "select * from average_x_value"
         self.cur.execute(select_query)
@@ -81,17 +82,19 @@ class PostgresManage:
 
         for row in avg_x_records:
 
-            avg_x_dict[row[2]] = [row[1], row[3]]
+            avg_x_dict[row[2]][row[1]] = row[3]
 
         return avg_x_dict
 
-    def insert_average_x_value(self, x_val, t_stamp, station):
+    def insert_average_x_value(self, x_val, t_stamp):
 
-        insert_query = """insert into average_x_value (STATION, TSTAMP, GHI_10_AVERAGE) values (%s, %s, %s)"""
-        record_insert = (station, t_stamp, x_val)
-        self.cur.execute(insert_query, record_insert)
+        for station in x_val:
 
-        self.conn.commit()
+            insert_query = """insert into average_x_value (STATION, TSTAMP, GHI_10_AVERAGE) values (%s, %s, %s)"""
+            record_insert = (station, t_stamp, x_val[station])
+            self.cur.execute(insert_query, record_insert)
+
+            self.conn.commit()
 
     def insert_y_value(self, y_dict, t_stamp, station):
 

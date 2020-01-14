@@ -4,13 +4,14 @@ import os
 from settings import DB_HOST, DB_NAME, DB_PASSWORD, DB_USER, ROOT_DIR, DB_PORT
 
 
-test_csv_file = os.path.join(ROOT_DIR, 'test_data', 'measurements_v1(2).csv')
+test_csv_file = os.path.join(ROOT_DIR, 'test_data', 'sample.csv')
 conn = psycopg2.connect(host=DB_HOST, port=DB_PORT, user=DB_USER, database=DB_NAME, password=DB_PASSWORD)
 cur = conn.cursor()
 
 cur.execute(
     """
     CREATE TABLE IF NOT EXISTS measurements_v1(
+        logger_id text, 
         station_name text COLLATE pg_catalog."default",
         tstamp timestamp with time zone NOT NULL,
         pyrgeometer_body_temperature_avg text,
@@ -90,8 +91,7 @@ cur.execute(
         current_max text,
         current_min text,
         temp_avg text,
-        addr bigint,
-        CONSTRAINT measurements_v1_pk PRIMARY KEY (tstamp)
+        addr bigint        
     )
     """
 )
