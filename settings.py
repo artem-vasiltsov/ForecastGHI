@@ -10,7 +10,7 @@ STATIONS = ["Turayna", "Al Batna", "Al Ghuwayriyah", "Al Khor", "Al Karaanah", "
 
 TIME_INTERVAL = 1
 AVG_COUNT = 10
-COUNTER = 60
+COUNTER = 75
 START_TIME = datetime.datetime(2020, 1, 1, 0, 0, 0)
 
 DB_HOST = "localhost"
