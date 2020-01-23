@@ -27,7 +27,7 @@ class PostgresManage:
                 ID SERIAL PRIMARY KEY,
                 STATION text NOT NULL, 
                 TSTAMP timestamp NOT NULL,
-                GHI_10_AVERAGE text NOT NULL
+                GHI_10_AVERAGE real NOT NULL
             )
             """
         )
@@ -38,18 +38,18 @@ class PostgresManage:
                 ID SERIAL PRIMARY KEY,
                 STATION text NOT NULL,
                 TSTAMP timestamp NOT NULL,
-                y1 text NOT NULL,
-                y2 text NOT NULL,
-                y3 text NOT NULL,
-                y4 text NOT NULL,
-                y5 text NOT NULL,
-                y6 text NOT NULL,
-                y7 text NOT NULL,
-                y8 text NOT NULL,
-                y9 text NOT NULL,
-                y10 text NOT NULL,
-                y11 text NOT NULL,
-                y12 text NOT NULL
+                y1 real NOT NULL,
+                y2 real NOT NULL,
+                y3 real NOT NULL,
+                y4 real NOT NULL,
+                y5 real NOT NULL,
+                y6 real NOT NULL,
+                y7 real NOT NULL,
+                y8 real NOT NULL,
+                y9 real NOT NULL,
+                y10 real NOT NULL,
+                y11 real NOT NULL,
+                y12 real NOT NULL
             )
             """
         )
