@@ -5,6 +5,8 @@ from settings import TIME_INTERVAL, AVG_COUNT, COUNTER, START_TIME, STATIONS
 from source.db_process.postgres_management import PostgresManage
 from utilis.constants import load_constants_y
 from utilis.date_time import convert_datetime
+from utilis.time_delay import estimate_data_accuracy
+from settings import DELAY_TIME
 
 
 class ForecastGHI:
@@ -26,14 +28,16 @@ class ForecastGHI:
 
         time_value = self.extract_station_ghi_value(dt_time=dt_time)
         str_dt_time = convert_datetime(dt_time)
+        data_accuracy = estimate_data_accuracy(data=time_value)
 
         cur_index = 0
-        while not any(time_value.values()):
+        while not data_accuracy:
 
             cur_index += 1
-            time.sleep(10)
+            time.sleep(60)
             time_value = self.extract_station_ghi_value(dt_time=dt_time)
-            if cur_index > 9:
+            data_accuracy = estimate_data_accuracy(data=time_value)
+            if cur_index > DELAY_TIME:
                 break
 
         return time_value, str_dt_time

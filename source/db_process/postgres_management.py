@@ -74,7 +74,7 @@ class PostgresManage:
 
     def read_average_x_value(self):
 
-        avg_x_dict = defaultdict(dict)
+        avg_x_dict = defaultdict()
 
         select_query = "select * from average_x_value"
         self.cur.execute(select_query)
