@@ -1,4 +1,4 @@
-# import time
+import time
 
 import datetime
 from settings import TIME_INTERVAL, AVG_COUNT, COUNTER, START_TIME, STATIONS
@@ -30,15 +30,15 @@ class ForecastGHI:
         str_dt_time = convert_datetime(dt_time)
         # data_accuracy = estimate_data_accuracy(data=time_value)
         #
-        # cur_index = 0
-        # while not data_accuracy:
-        #
-        #     cur_index += 1
-        #     time.sleep(60)
-        #     time_value = self.extract_station_ghi_value(dt_time=dt_time)
-        #     data_accuracy = estimate_data_accuracy(data=time_value)
-        #     if cur_index > DELAY_TIME:
-        #         break
+        cur_index = 0
+        while not time_value:
+
+            cur_index += 1
+            time.sleep(10)
+            time_value = self.extract_station_ghi_value(dt_time=dt_time)
+            # data_accuracy = estimate_data_accuracy(data=time_value)
+            if cur_index > 9:
+                break
 
         return time_value, str_dt_time
 
