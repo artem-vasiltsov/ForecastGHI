@@ -35,6 +35,7 @@ class ForecastGHI:
             temp_x, str_next_time = self.ghi_collector.extract_time_ghi_value(dt_time=next_time)
 
             x_value[str_next_time] = temp_x
+            print(x_value)
             x_value = self.get_average_x_value(x_dict=x_value)
             next_time += datetime.timedelta(hours=0, minutes=TIME_INTERVAL, seconds=0)
             # print(x_value)
@@ -69,6 +70,8 @@ class ForecastGHI:
                     continue
 
                 avg_x[y] = sum_x[y] / avg_cnt[y]
+
+                print(y, avg_x[y])
 
             self.db_manage.insert_average_x_value(x_val=avg_x, t_stamp=list(x_dict.keys())[-1])
             self.get_y_value()
