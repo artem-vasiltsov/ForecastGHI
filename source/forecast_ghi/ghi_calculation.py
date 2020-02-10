@@ -1,12 +1,9 @@
-import time
-
 import datetime
+
 from settings import TIME_INTERVAL, AVG_COUNT, COUNTER, START_TIME, STATIONS
 from source.db_process.postgres_management import PostgresManage
+from source.ghi_value_collection.ghi_value_result import GhiCollector
 from utilis.constants import load_constants_y
-from utilis.date_time import convert_datetime
-# from utilis.time_delay import estimate_data_accuracy
-# from settings import DELAY_TIME
 
 
 class ForecastGHI:
@@ -15,32 +12,7 @@ class ForecastGHI:
 
         self.db_manage = PostgresManage()
         self.constants = load_constants_y()
-
-    def extract_station_ghi_value(self, dt_time):
-
-        station_value = {}
-        for station in STATIONS:
-            station_value[station] = self.db_manage.read_ghi_value(date_time=dt_time, station_name=station)
-
-        return station_value
-
-    def extract_time_ghi_value(self, dt_time):
-
-        time_value = self.extract_station_ghi_value(dt_time=dt_time)
-        str_dt_time = convert_datetime(dt_time)
-        # data_accuracy = estimate_data_accuracy(data=time_value)
-        #
-        cur_index = 0
-        while not time_value:
-
-            cur_index += 1
-            time.sleep(10)
-            time_value = self.extract_station_ghi_value(dt_time=dt_time)
-            # data_accuracy = estimate_data_accuracy(data=time_value)
-            if cur_index > 9:
-                break
-
-        return time_value, str_dt_time
+        self.ghi_collector = GhiCollector()
 
     def forecast_y_value_ghi(self):
 
@@ -54,13 +26,13 @@ class ForecastGHI:
             current_time = list(last_record_time.keys())[-1] + \
                            datetime.timedelta(hours=0, minutes=TIME_INTERVAL, seconds=0)
 
-        st_ghi_value, str_dt_time = self.extract_time_ghi_value(dt_time=current_time)
+        st_ghi_value, str_dt_time = self.ghi_collector.extract_time_ghi_value(dt_time=current_time)
         x_value[str_dt_time] = st_ghi_value
 
         next_time = current_time + datetime.timedelta(hours=0, minutes=TIME_INTERVAL, seconds=0)
 
         while True:
-            temp_x, str_next_time = self.extract_time_ghi_value(dt_time=next_time)
+            temp_x, str_next_time = self.ghi_collector.extract_time_ghi_value(dt_time=next_time)
 
             x_value[str_next_time] = temp_x
             x_value = self.get_average_x_value(x_dict=x_value)
@@ -71,6 +43,8 @@ class ForecastGHI:
 
         avg_x = {}
         sum_x = {}
+        avg_cnt = {}
+
         if len(x_dict) < AVG_COUNT:
 
             return x_dict
@@ -78,14 +52,23 @@ class ForecastGHI:
 
             for station in STATIONS:
                 sum_x[station] = 0
+                avg_cnt[station] = AVG_COUNT
 
             for x in x_dict:
 
                 for station_term in x_dict[x]:
                     sum_x[station_term] += float(x_dict[x][station_term])
 
+                    if float(x_dict[x][station_term]) == 0:
+                        avg_cnt[station_term] -= 1
+
             for y in sum_x:
-                avg_x[y] = sum_x[y] / AVG_COUNT
+
+                if avg_cnt[y] == 0:
+                    avg_x[y] = 0
+                    continue
+
+                avg_x[y] = sum_x[y] / avg_cnt[y]
 
             self.db_manage.insert_average_x_value(x_val=avg_x, t_stamp=list(x_dict.keys())[-1])
             self.get_y_value()

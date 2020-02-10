@@ -1,5 +1,5 @@
-import os
 import datetime
+import os
 
 now = datetime.datetime.now()
 
@@ -11,7 +11,7 @@ STATIONS = ["Turayna", "Al Batna", "Al Ghuwayriyah", "Al Khor", "Al Karaanah", "
 TIME_INTERVAL = 1
 AVG_COUNT = 10
 COUNTER = 75
-# DELAY_TIME = 30
+DELAY_TIME = 30
 START_TIME = datetime.datetime(2020, 1, 1, 0, 0, 0)
 
 DB_HOST = "localhost"

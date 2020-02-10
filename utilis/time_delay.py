@@ -3,7 +3,7 @@ def estimate_data_accuracy(data):
     accuracy = True
     for value in data.values():
 
-        if not value:
+        if value == 0:
             accuracy = False
             break
 
