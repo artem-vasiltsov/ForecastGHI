@@ -1,9 +1,9 @@
 import datetime
 
-from settings import TIME_INTERVAL, AVG_COUNT, COUNTER, START_TIME, STATIONS
+from settings import TIME_INTERVAL, AVG_COUNT, COUNTER, START_TIME, STATIONS, BASE_SOLAR_ANGLES
 from source.db_process.postgres_management import PostgresManage
 from source.ghi_value_collection.ghi_value_result import GhiCollector
-from utilis.constants import load_constants_y
+from utilis.constants import load_constants_y, load_solar_angle
 
 
 class ForecastGHI:
@@ -12,6 +12,7 @@ class ForecastGHI:
 
         self.db_manage = PostgresManage()
         self.constants = load_constants_y()
+        self.solar_angles_time, self.solar_angles = load_solar_angle()
         self.ghi_collector = GhiCollector()
 
     def forecast_y_value_ghi(self):
@@ -93,6 +94,8 @@ class ForecastGHI:
             y_value = {}
 
             end_t_stamp = list(avg_x_value.keys())[-1]
+            solar_angle_c_time = end_t_stamp + datetime.timedelta(hours=0, minutes=TIME_INTERVAL, seconds=0)
+            solar_angles = self.solar_angles[self.solar_angles_time.index(solar_angle_c_time.strftime("%Y-%m-%d %H:%M:00"))]
             for station_term in STATIONS:
 
                 for i in range(1, 13):
@@ -103,10 +106,16 @@ class ForecastGHI:
                         y_value[i] += self.constants[COUNTER - j][i] * \
                                       float(avg_x_value[avg_x_key][station_term])
 
+                if float(solar_angles) < BASE_SOLAR_ANGLES:
+                    y_value["corrected"] = 0
+                else:
+                    y_value["corrected"] = y_value["1"]
+
                 print("station:{}".format(station_term))
                 print("current time:{}".format(end_t_stamp))
                 print("Y values:{}".format(y_value))
 
-                self.db_manage.insert_y_value(y_dict=y_value, t_stamp=end_t_stamp, station=station_term)
+                self.db_manage.insert_y_value(y_dict=y_value, t_stamp=end_t_stamp, station=station_term,
+                                              slr_angles=solar_angles)
 
             return

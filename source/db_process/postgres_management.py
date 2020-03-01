@@ -1,7 +1,8 @@
+from _collections import defaultdict
+
 import psycopg2
 
 from settings import DB_HOST, DB_NAME, DB_PASSWORD, DB_USER, MEASUREMENT_TABLE_NAME, DB_PORT
-from _collections import defaultdict
 
 
 class PostgresManage:
@@ -38,7 +39,9 @@ class PostgresManage:
                 ID SERIAL PRIMARY KEY,
                 STATION text NOT NULL,
                 TSTAMP timestamp NOT NULL,
+                SOLAR_ANGLES text not null,
                 y1 real NOT NULL,
+                y1_corrected real not null,
                 y2 real NOT NULL,
                 y3 real NOT NULL,
                 y4 real NOT NULL,
@@ -54,6 +57,15 @@ class PostgresManage:
             """
         )
 
+        self.cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS public.forecast_visualization(
+                ID SERIAL PRIMARY KEY,                 
+                TSTAMP timestamp NOT NULL,
+                Forecast real NOT NULL
+            )
+            """
+        )
         self.conn.commit()
 
     def read_ghi_value(self, date_time, station_name):
@@ -96,12 +108,13 @@ class PostgresManage:
 
             self.conn.commit()
 
-    def insert_y_value(self, y_dict, t_stamp, station):
+    def insert_y_value(self, y_dict, t_stamp, station, slr_angles):
 
-        insert_query = "insert into y_value (STATION, TSTAMP, y1, y2, y3, y4, y5, y6, y7, y8, y9, y10, y11, y12) " \
-                       "values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        record_insert = (station, t_stamp, y_dict[1], y_dict[2], y_dict[3], y_dict[4], y_dict[5], y_dict[6], y_dict[7],
-                         y_dict[8], y_dict[9], y_dict[10], y_dict[11], y_dict[12])
+        insert_query = "insert into y_value (STATION, TSTAMP, SOLAR_ANGLES, y1, y1_corrected, y2, y3, y4, y5, y6, " \
+                       "y7, y8, y9, y10, y11, y12) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, " \
+                       "%s, %s)"
+        record_insert = (station, t_stamp, slr_angles, y_dict[1], y_dict["corrected"], y_dict[2], y_dict[3], y_dict[4],
+                         y_dict[5], y_dict[6], y_dict[7], y_dict[8], y_dict[9], y_dict[10], y_dict[11], y_dict[12])
 
         self.cur.execute(insert_query, record_insert)
 

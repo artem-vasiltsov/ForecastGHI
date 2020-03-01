@@ -1,6 +1,6 @@
 import pandas as pd
 
-from settings import CONSTANTS_FILE, COUNTER
+from settings import CONSTANTS_FILE, COUNTER, SOLAR_ANGLE_FILE
 
 
 def load_constants_y():
@@ -18,6 +18,16 @@ def load_constants_y():
     return constants
 
 
+def load_solar_angle():
+
+    solar_angle_data = pd.read_csv(SOLAR_ANGLE_FILE, header=None)
+    solar_angles_time = solar_angle_data.iloc[:, 0].values.tolist()[1:]
+    solar_angles = solar_angle_data.iloc[:, 1].values.tolist()[1:]
+
+    return solar_angles_time, solar_angles
+
+
 if __name__ == '__main__':
 
-    load_constants_y()
+    # load_constants_y()
+    load_solar_angle()
