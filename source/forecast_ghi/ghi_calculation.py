@@ -94,7 +94,12 @@ class ForecastGHI:
             y_value = {}
 
             end_t_stamp = list(avg_x_value.keys())[-1]
-            solar_angle_c_time = end_t_stamp + datetime.timedelta(hours=0, minutes=TIME_INTERVAL, seconds=0)
+            end_minute = int(end_t_stamp.strftime("%M"))
+            if end_minute >= 30:
+                solar_angle_c_time = end_t_stamp + datetime.timedelta(hours=0, minutes=60 - end_minute, seconds=0)
+            else:
+                solar_angle_c_time = end_t_stamp - datetime.timedelta(hours=0, minutes=end_minute, seconds=0)
+
             solar_angles = self.solar_angles[self.solar_angles_time.index(
                 solar_angle_c_time.strftime("%Y-%m-%d %H:%M:00"))]
             for station_term in STATIONS:

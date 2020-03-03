@@ -29,10 +29,18 @@ In settings.py, configure various options including database settings.
 
 - AVG_COUNT is a time that it takes to obtain average value of GHI values. It's default value is 10 minutes.
 
-- COUNTER is number of terms necessary for calculating y value. It's value is 75 and don't change it.
+- COUNTER is number of terms necessary for calculating y value. It's value is 75 and can be changed manually, but must
+be less than 76.
 
 - Also START_TIME can be configured, that can be easily changed by year, month, day, hour, minute as you like.
-But at this point, second, where is set as 0, can never be changed as long as tstamp field of measurement table doesn't change  
+But at this point, second, where is set as 0, can never be changed as long as tstamp field of measurement table doesn't 
+change.
+
+- DELAY_TIME shows the max time that it takes for each station to get the GHI value and send it to the server. It's 
+default value is 30 min.
+
+- BASE_SOLAR_ANGLES is the threshold value for y1_corrected. If the value of solar angle is greater than this threshold
+value for each measurement time, the value of y1_corrected is equal to the value of y1, else 0. It's default value is 80.
 
 ## Execution
 
