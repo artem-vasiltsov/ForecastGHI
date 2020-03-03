@@ -95,7 +95,8 @@ class ForecastGHI:
 
             end_t_stamp = list(avg_x_value.keys())[-1]
             solar_angle_c_time = end_t_stamp + datetime.timedelta(hours=0, minutes=TIME_INTERVAL, seconds=0)
-            solar_angles = self.solar_angles[self.solar_angles_time.index(solar_angle_c_time.strftime("%Y-%m-%d %H:%M:00"))]
+            solar_angles = self.solar_angles[self.solar_angles_time.index(
+                solar_angle_c_time.strftime("%Y-%m-%d %H:%M:00"))]
             for station_term in STATIONS:
 
                 for i in range(1, 13):
@@ -109,7 +110,7 @@ class ForecastGHI:
                 if float(solar_angles) < BASE_SOLAR_ANGLES:
                     y_value["corrected"] = 0
                 else:
-                    y_value["corrected"] = y_value["1"]
+                    y_value["corrected"] = y_value[1]
 
                 print("station:{}".format(station_term))
                 print("current time:{}".format(end_t_stamp))
@@ -117,5 +118,7 @@ class ForecastGHI:
 
                 self.db_manage.insert_y_value(y_dict=y_value, t_stamp=end_t_stamp, station=station_term,
                                               slr_angles=solar_angles)
+
+                self.db_manage.insert_forecast_visualization(t_stamp=end_t_stamp, y_value=y_value, station=station_term)
 
             return

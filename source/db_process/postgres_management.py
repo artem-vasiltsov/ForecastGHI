@@ -1,4 +1,5 @@
-from _collections import defaultdict
+import datetime
+from collections import defaultdict
 
 import psycopg2
 
@@ -62,6 +63,7 @@ class PostgresManage:
             CREATE TABLE IF NOT EXISTS public.forecast_visualization(
                 ID SERIAL PRIMARY KEY,                 
                 TSTAMP timestamp NOT NULL,
+                STATION text NOT NULL,
                 Forecast real NOT NULL
             )
             """
@@ -117,5 +119,25 @@ class PostgresManage:
                          y_dict[5], y_dict[6], y_dict[7], y_dict[8], y_dict[9], y_dict[10], y_dict[11], y_dict[12])
 
         self.cur.execute(insert_query, record_insert)
+
+        self.conn.commit()
+
+    def insert_forecast_visualization(self, t_stamp, y_value, station):
+
+        if station == "Turayna":
+            del_query = "delete from forecast_visualization"
+            self.cur.execute(del_query)
+
+        time_stamp = t_stamp
+        for item in y_value:
+
+            if item == "corrected":
+                continue
+
+            time_stamp += datetime.timedelta(hours=1, minutes=0, seconds=0)
+            insert_query = "insert into forecast_visualization (TSTAMP, STATION, Forecast) values (%s, %s, %s)"
+            record_insert = (time_stamp, station, y_value[item])
+
+            self.cur.execute(insert_query, record_insert)
 
         self.conn.commit()
