@@ -112,7 +112,7 @@ class ForecastGHI:
                         y_value[i] += self.constants[COUNTER - j][i] * \
                                       float(avg_x_value[avg_x_key][station_term])
 
-                if float(solar_angles) < BASE_SOLAR_ANGLES:
+                if float(solar_angles) > BASE_SOLAR_ANGLES:
                     y_value["corrected"] = 0
                 else:
                     y_value["corrected"] = y_value[1]
